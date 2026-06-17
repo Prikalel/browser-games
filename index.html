@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выбор игры</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 15px 40px;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            color: white;
+        }
+        .btn-domino {
+            background: #f093fb;
+        }
+        .btn-domino:hover {
+            background: #e07cee;
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(240, 147, 251, 0.5);
+        }
+        .btn-password {
+            background: #4facfe;
+        }
+        .btn-password:hover {
+            background: #3a8fd6;
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(79, 172, 254, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Выберите игру</h1>
+        <div class="buttons">
+            <button class="btn-domino" onclick="window.location.href='./domino-ladder-index.html'">
+                🎲 Domino Ladder
+            </button>
+            <button class="btn-password" onclick="window.location.href='./password-game-index.html'">
+                🔐 Password Game
+            </button>
+        </div>
+    </div>
+</body>
+</html>
