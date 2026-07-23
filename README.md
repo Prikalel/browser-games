@@ -23,7 +23,7 @@ In a series of attempts of password guess, you make an assumption based on the c
 
 В серии попыток вы делаете предположение по содержании пароля, вводить можно только цифры 1-9, без 0. Загаданный пароль всегда содержит только уникальные цифры (без повторений). Но в ваших попытках этого ограничения нет. Если вы не успели за 30 секунд вам покажут какой пароль был загадан. После попытки подсвечиваются цифры - зелёным если вы угадали и цифру и позицию, жёлтым - если ваша цифра есть в пароле, но в попытке она стоит не на своём месте. После новой попытки старая пропадает так что вам надо помнить, какие попытки вы делали.Если в вашей попытке есть хоть 1 зелёная цифра, то в следующей попытке я вам советую пытаться угадать пароль ставя на ту же позицию ту же цифру, иначе в новой попытке позиция станет красной а из времени отнимется 5 секунд.
 
-### ShittyMaze
+### [ShittyMaze](https://github.com/Prikalel/ShittyMaze)
 
 Just run through the level and shoot the enemies with an endless revolver. Find the green cube to advance to the next level. The difficulty increases with each level.
 
@@ -31,7 +31,7 @@ Just run through the level and shoot the enemies with an endless revolver. Find 
 
 Просто бегайте по уровню и стреляйте во врагов из бесконечного револьвера. Найдите зелёный куб чтобы перейти на следующий уровень. С каждым уровнем сложность повышается.
 
-### Theygrow
+### [Theygrow](https://github.com/Prikalel/they-grow)
 
 Strategy-roguelike game with a selection of cards. You have 4 factions and people who can be assign between them by dragging icons. Each turn, you need to choose 2 cards, one of which will be randomly played. The goal is not to die from the fact that some parameter has become negative or all people have died out. Currently now - no english translation.
 
@@ -39,7 +39,7 @@ Strategy-roguelike game with a selection of cards. You have 4 factions and peopl
 
 Стратегия-рогалик с выбором карт. У вас есть 4 фракции и люди, которых можно распределять между ними перетаскиванием иконок. Каждый ход нужно выбрать 2 карты одна из которых случайно разыграется. Цель - не умереть от того что какой-то параметр стал отрицательным или все люди вымерли. Сейчас в игре нет английского перевода, но есть подробный туториал по кнопке слева сверху.
 
-### Degustator
+### [Degustator](https://github.com/Prikalel/degustator-on-x-7)
 
 Multiple campaigns. Each is a set of levels that must be completed without dying. Each level is a checkered board on which your character moves each turn, spending 1 unit of hunger and a certain amount of energy per turn. Energy and hunger are the player's parameters replenished by eating items, they are reset when moving to a new level, which cannot be said about coins - coins are saved between levels, but you start each campaign with 0 money. The player's choice is to choose a method of movement that will determine by tossing a die how many squares your character moves, choosing a route and choosing what to eat before moving. If hunger or strength drops to 0, you will lose. Inventory auto-sells all items on level end and you can buy something in a shop before moving to the next level.
 
@@ -47,7 +47,7 @@ Multiple campaigns. Each is a set of levels that must be completed without dying
 
 Несколько кампаний. Каждая - это набор уровней, которые надо пройти не умирая. Каждый уровень представляет собой клетчатую доску по которой перемещается ваш персонаж каждый ход, тратя на ход 1 единицу голода и некоторое кол-во энергии. Энергия и голод - это параметры игрока пополняемые через поедание предметов, они сбрасываются при переходе на новый уровень, чего не скажешь о монетах - монеты между уровнями сохраняются, но каждую кампанию вы начинаете с 0 денег. Выбор игрока состоит в том чтобы: выбрать способ перемещения который определит подбросом кубика на сколько клеток двигается ваш персонаж, выбор маршрута и выбор что съесть перед движением. Если упали голод или сила в 0 - вы проиграете. Инвентарь автоматически продаётся в конце уровня и вам позволяют выбрать, что купить в магазине прежде, чем переходить к следующему уровню.
 
-### AangLegend
+### [AangLegend](https://github.com/Prikalel/AangLegend)
 
 This is a strategic card game where you control the balance of four nations: the Fire Nation, the Water Tribe, the Earth Kingdom, and the Air Nomads. Your goal is to maintain harmony between nations by making decisions that affect their resources. You don't have to read the card descriptions: just tap on the button or start swipe the card to see how the values change. The longer you last, the better.
 
