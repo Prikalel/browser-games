@@ -5,18 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Выбор игры</title>
     <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
         body {
             font-family: Arial, sans-serif;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 24px 16px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
         .container {
             background: white;
-            padding: 40px;
+            width: 100%;
+            max-width: 720px;
+            padding: clamp(20px, 5vw, 40px);
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             text-align: center;
@@ -24,13 +31,18 @@
         h1 {
             color: #333;
             margin-bottom: 30px;
+            font-size: clamp(1.3em, 4vw, 1.9em);
+            word-break: break-word;
         }
         .buttons {
             display: flex;
-            gap: 20px;
+            gap: 18px;
             justify-content: center;
+            align-items: stretch;
             flex-wrap: wrap;
         }
+
+        /* ---------- Base button look ---------- */
         button {
             padding: 15px 40px;
             font-size: 18px;
@@ -41,56 +53,47 @@
             font-weight: bold;
             color: white;
         }
-        .btn-domino {
-            background: #f093fb;
-        }
-        .btn-domino:hover {
-            background: #e07cee;
-            transform: scale(1.05);
-            box-shadow: 0 5px 20px rgba(240, 147, 251, 0.5);
-        }
-        .btn-password {
-            background: #4facfe;
-        }
-        .btn-password:hover {
-            background: #3a8fd6;
-            transform: scale(1.05);
-            box-shadow: 0 5px 20px rgba(79, 172, 254, 0.5);
-        }
-        .btn-shittymaze {
-            background: #cc7a00;
-        }
-        .btn-shittymaze:hover {
-            background: #915700;
-            transform: scale(1.05);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
-        }
-        .btn-theygrow {
-            background: #7a32ff;
-        }
-        .btn-theygrow:hover {
-            background: #2d0081;
-            transform: scale(1.05);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
-        }
-        .degustator {
-            background: #2a9400;
-        }
-        .degustator:hover {
-            background: #1a3f00;
-            transform: scale(1.05);
-            box-shadow: 0 5px 20px rgba(179, 255, 47, 0.5);
-        }
-        .aang {
-            background: #bd0d00;
-        }
-        .aang:hover {
-            background: #570600;
-            transform: scale(1.05);
-            box-shadow: 0 5px 20px rgba(255, 143, 135, 0.5);
+
+        /*
+            Game buttons pick their own colors from CSS variables that are
+            injected by JS (see GAMES below). This means there is NO need to
+            write a separate .btn-xxx CSS rule for every new game.
+        */
+        .buttons button {
+            flex: 1 1 200px;
+            min-width: 0;
+            background: var(--btn-color, #888);
         }
 
-        /* Floating "i" (info) button */
+        /* Hover / tap feedback only on devices that actually hover (avoids
+           "stuck hover" on touch screens). */
+        @media (hover: hover) {
+            .buttons button:hover {
+                background: var(--btn-hover, var(--btn-color, #666));
+                transform: scale(1.05);
+                box-shadow: 0 5px 20px var(--btn-glow, rgba(0,0,0,0.5));
+            }
+        }
+
+        /* ---------- Steam widget (kept responsive) ---------- */
+        .steam-widget {
+            width: 100%;
+            max-width: 646px;
+            margin: 0 auto;
+        }
+        .steam-widget iframe {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            height: 190px;
+            border: 0;
+        }
+        .box-2 {
+            margin-top: 14px;
+            word-break: break-word;
+        }
+
+        /* ---------- Floating "i" (info) button ---------- */
         .info-button {
             position: fixed;
             top: 20px;
@@ -120,7 +123,7 @@
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
         }
 
-        /* README modal */
+        /* ---------- README modal ---------- */
         .modal {
             display: none;
             position: fixed;
@@ -129,7 +132,7 @@
             z-index: 2000;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 16px;
             box-sizing: border-box;
         }
         .modal.open {
@@ -140,10 +143,10 @@
             border-radius: 16px;
             max-width: 820px;
             width: 100%;
-            max-height: 85vh;
+            max-height: 88vh;
             overflow-y: auto;
             position: relative;
-            padding: 40px;
+            padding: clamp(18px, 5vw, 40px);
             box-sizing: border-box;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         }
@@ -166,7 +169,7 @@
             box-shadow: none;
         }
 
-        /* Rendered README styling */
+        /* ---------- Rendered README styling ---------- */
         .readme {
             text-align: left;
             line-height: 1.6;
@@ -202,6 +205,37 @@
             border-radius: 4px;
             font-family: Consolas, monospace;
         }
+
+        /* ============================================================
+           MOBILE ADAPTATION (phones)
+           - On phones only the games marked mobile:true stay visible.
+           - Buttons become full-width, comfortable to tap.
+           ============================================================ */
+        @media (max-width: 640px) {
+            body {
+                padding: 16px 12px;
+                justify-content: flex-start;
+            }
+            .container {
+                padding: 22px 16px;
+            }
+            h1 {
+                margin-bottom: 18px;
+            }
+            /* Hide every game that is NOT phone-friendly */
+            .buttons button[data-mobile="false"] {
+                display: none;
+            }
+            .buttons {
+                gap: 12px;
+            }
+            .buttons button {
+                flex: 1 1 100%;
+                width: 100%;
+                padding: 16px 20px;
+                font-size: 17px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -220,30 +254,15 @@
 
     <div class="container">
         <h1>Select a game/Выберите игру</h1>
-        <div class="buttons">
-            <button class="btn-domino" onclick="window.location.href='./domino-ladder-index.html'">
-                🎲 Domino Ladder
-            </button>
-            <button class="btn-password" onclick="window.location.href='./password-game-index.html'">
-                🔐 Password Game
-            </button>
-            <button class="btn-shittymaze" onclick="window.location.href='https://prikalel.github.io/ShittyMaze/'">
-                🏠 ShittyMaze
-            </button>
-            <button class="btn-theygrow" onclick="window.location.href='https://prikalel.github.io/they-grow/'">
-                👤 Theygrow
-            </button>
-            <button class="degustator" onclick="window.location.href='https://prikalel.github.io/degustator-on-x-7/'">
-                🍔 Degustator
-            </button>
-            <button class="aang" onclick="window.location.href='https://prikalel.github.io/AangLegend/'">
-                🔥 AangLegend
-            </button>
-        </div>
+
+        <!-- Game buttons are generated automatically from the GAMES list below -->
+        <div class="buttons" id="gameButtons"></div>
 
         <br/><br/>
         <div class="container">
-            <div class="box-1"><iframe src="https://store.steampowered.com/widget/4799230/?t=please%20add%20my%20game%20to%20your%20wishlist%20%F0%9F%98%8D%E2%AD%90%20thank%20you!" frameborder="0" width="646" height="190"></iframe></div>
+            <div class="box-1 steam-widget">
+                <iframe src="https://store.steampowered.com/widget/4799230/?t=please%20add%20my%20game%20to%20your%20wishlist%20%F0%9F%98%8D%E2%AD%90%20thank%20you!" frameborder="0" loading="lazy"></iframe>
+            </div>
             <div class="box-2"><a style="color: #333;">contact with developer:</a> <a href="mailto:jispar@mail.ru">jispar@mail.ru</a>.</div>
         </div>
     </div>
@@ -251,6 +270,110 @@
     <!-- Markdown renderer + README loader -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
+        /* ============================================================
+           СПИСОК ИГР  (единственное место, которое нужно править)
+           ------------------------------------------------------------
+           Чтобы добавить новую игру — просто скопируйте один блок { ... }
+           и заполните поля. Больше НИЧЕГО менять не нужно: кнопка,
+           цвет и логика мобильной видимости подхватятся автоматически.
+
+             cls    — класс-«крючок» (на случай, если захотите стилизовать
+                      конкретную игру вручную). Можно оставить ''.
+             label  — текст кнопки (с эмодзи).
+             href   — ссылка на игру.
+             color  — основной цвет кнопки.
+             hover  — цвет при наведении (необязательно).
+             glow   — цвет свечения при наведении (необязательно).
+             mobile — true  → показывать на телефоне;
+                      false → скрыть на телефоне (по умолчанию).
+           ============================================================ */
+        const GAMES = [
+            {
+                cls: 'btn-domino',
+                label: '🎲 Domino Ladder',
+                href: './domino-ladder-index.html',
+                color: '#f093fb',
+                hover: '#e07cee',
+                glow: 'rgba(240, 147, 251, 0.5)',
+                mobile: false,
+            },
+            {
+                cls: 'btn-password',
+                label: '🔐 Password Game',
+                href: './password-game-index.html',
+                color: '#4facfe',
+                hover: '#3a8fd6',
+                glow: 'rgba(79, 172, 254, 0.5)',
+                mobile: false,
+            },
+            {
+                cls: 'btn-shittymaze',
+                label: '🏠 ShittyMaze',
+                href: 'https://prikalel.github.io/ShittyMaze/',
+                color: '#cc7a00',
+                hover: '#915700',
+                glow: 'rgba(0, 0, 0, 0.5)',
+                mobile: false,
+            },
+            {
+                cls: 'btn-theygrow',
+                label: '👤 Theygrow',
+                href: 'https://prikalel.github.io/they-grow/',
+                color: '#7a32ff',
+                hover: '#2d0081',
+                glow: 'rgba(0, 0, 0, 0.5)',
+                mobile: false,
+            },
+            {
+                cls: 'degustator',
+                label: '🍔 Degustator',
+                href: 'https://prikalel.github.io/degustator-on-x-7/',
+                color: '#2a9400',
+                hover: '#1a3f00',
+                glow: 'rgba(179, 255, 47, 0.5)',
+                mobile: true,
+            },
+            {
+                cls: 'aang',
+                label: '🔥 AangLegend',
+                href: 'https://prikalel.github.io/AangLegend/',
+                color: '#bd0d00',
+                hover: '#570600',
+                glow: 'rgba(255, 143, 135, 0.5)',
+                mobile: true,
+            },
+        ];
+
+        /* Build the game buttons from the config above. */
+        function renderGames() {
+            const container = document.getElementById('gameButtons');
+            if (!container) return;
+
+            const frag = document.createDocumentFragment();
+            GAMES.forEach(function (g) {
+                const btn = document.createElement('button');
+                if (g.cls) btn.className = g.cls;
+
+                // Colors are injected as CSS variables -> no per-game CSS needed.
+                btn.style.setProperty('--btn-color', g.color);
+                btn.style.setProperty('--btn-hover', g.hover || g.color);
+                btn.style.setProperty('--btn-glow', g.glow || 'rgba(0, 0, 0, 0.5)');
+
+                // Phone-visibility flag drives the @media rule in <style>.
+                btn.dataset.mobile = g.mobile ? 'true' : 'false';
+
+                btn.textContent = g.label;
+                btn.addEventListener('click', function () {
+                    window.location.href = g.href;
+                });
+                frag.appendChild(btn);
+            });
+            container.appendChild(frag);
+        }
+
+        renderGames();
+
+        /* ---------- README modal logic (unchanged) ---------- */
         let readmeLoaded = false;
 
         async function openReadme() {
