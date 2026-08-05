@@ -59,6 +59,14 @@ This is a strategic card game where you control the balance of four nations: the
 
 This is a very old project that I downgraded to version 3 godot. Horror with monsters - game'll even let you shoot. The end of the game is the transition to the main menu, so there are only 4 levels and 1 screamer in the game.
 
-![](imgs/img-6.jpg)
+![TRUBA](imgs/img-6.jpg)
 
 Это очень старый проект который я даунгрейднул до 3 версии годота. Хоррор с монстриками - вам даже дадут пострелять. Концовка игры - это переход в главное меню, таким образом всего в игре 4 уровня и 1 скример. На первом уровне надо разбить ящики сковородкой.
+
+### Baba Yaga
+
+A quirky action game where Baba Yaga returns to her cozy hut — but something is off. Dodge obstacles and knock incoming objects back to stop the hut. Controls: WASD move, Space - to hit an object flying at you. The hut has an HP bar - hit the objects so that they fly into the hut and so it takes damage. Dodge the pillows - it's pointless to beat them off, they don't cause damage to the hut, but they do to your character! Eat fried eggs and mushrooms to heal up, you have 3 hearts. Have you won? Take a screenshot and share it with your friends!
+
+![Baba Yaga](imgs\img-7.png)
+
+Нелепая экшен-игра, в которой Баба-яга возвращается в свою уютную избушку, но есть один нюанс. Уклоняйтесь от препятствий и отбивайте летящие предметы, чтобы остановить избу. Управление: WASD перемещение, Space - отбить летящий в вас предмет. У избы есть ХП бар - отбивайте предметы чтобы они летели в избу и так она получает урон. Уклоняйтесь от подушек - их бессмысленно отбивать, урон избе они не наносят, зато вашему персонажу - ещё как! Кушайте яишницу и грибы чтобы восполнить своё хп, у вас 3 сердечка. Победили? Скриньте и делитесь с друзьями!
