@@ -55,7 +55,7 @@ This is a strategic card game where you control the balance of four nations: the
 
 Это стратегическая карточная игра, где вы управляете балансом четырех народов: Народа Огня, Племени Воды, Царства Земли и Кочевников Воздуха. Ваша цель - поддерживать гармонию между народами, принимая решения, которые влияют на их ресурсы. Вам необязательно читать описания карт: достаточно навестись на кнопку или начать свайпать карту, чтобы посмотреть как изменятся значения. Чем дольше ходов вы продержитесь - тем лучше.
 
-### TRUBA
+### [TRUBA](https://github.com/Prikalel/TRUBA)
 
 This is a very old project that I downgraded to version 3 godot. Horror with monsters - game'll even let you shoot. The end of the game is the transition to the main menu, so there are only 4 levels and 1 screamer in the game.
 
