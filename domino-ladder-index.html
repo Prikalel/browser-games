@@ -64,6 +64,35 @@
     #restart:hover { background: #303f9f; }
     
     .hint { font-size: 12px; color: #666; margin-top: 8px; }
+
+    /* Кросс-промо: алёрт после 3 побед */
+    #promo-overlay {
+      position: fixed; inset: 0; background: rgba(25, 32, 55, 0.6);
+      display: none; align-items: center; justify-content: center; z-index: 2000;
+    }
+    #promo-overlay.show { display: flex; }
+    #promo-modal {
+      background: #fff; border-radius: 16px; padding: 26px 24px; max-width: 350px;
+      width: calc(100% - 40px); text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+      animation: promoPop 0.25s ease;
+    }
+    @keyframes promoPop {
+      from { transform: scale(0.85); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    #promo-modal h3 { margin: 0 0 10px; color: #333; font-size: 21px; }
+    #promo-modal p { margin: 0 0 18px; color: #555; font-size: 15px; line-height: 1.5; }
+    .promo-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    #promo-play {
+      padding: 10px 22px; font-size: 16px; background: #3f51b5; color: #fff;
+      border: none; border-radius: 6px; cursor: pointer;
+    }
+    #promo-play:hover { background: #303f9f; }
+    #promo-later {
+      padding: 10px 22px; font-size: 16px; background: #eceff1; color: #455a64;
+      border: none; border-radius: 6px; cursor: pointer;
+    }
+    #promo-later:hover { background: #cfd8dc; }
   </style>
 </head>
 <body>
@@ -78,6 +107,18 @@
 </div>
 
 <div id="ghost"></div>
+
+<!-- Кросс-промо: алёрт после 3 побед с предложением сыграть в TRUBA -->
+<div id="promo-overlay">
+  <div id="promo-modal">
+    <h3>🚰 Заряжены на победу!</h3>
+    <p>Вы уже победили <b>3 раза</b> — отличный результат! Самое время попробовать нашу другую игру — <b>TRUBA</b> 🚰</p>
+    <div class="promo-btns">
+      <button id="promo-play">Играть в TRUBA</button>
+      <button id="promo-later">Позже</button>
+    </div>
+  </div>
+</div>
 
 <script>
   const grid = Array.from({ length: 5 }, () => Array(4).fill(0));
@@ -265,6 +306,7 @@
       msgEl.textContent = '🎉 Победа! Столб собран.';
       msgEl.className = 'win';
       restartBtn.style.display = 'inline-block';
+      trackWinAndMaybePromo();
       return;
     }
     
@@ -339,6 +381,27 @@
   }
 
   restartBtn.addEventListener('click', init);
+
+  // ===== Кросс-промо: после 3 побед предлагаем TRUBA =====
+  const PROMO_URL = 'https://prikalel.gitlab.io/truba-build/';
+  const PROMO_WINS_NEEDED = 3;
+
+  function trackWinAndMaybePromo() {
+    let wins = (parseInt(localStorage.getItem('dominoLadderWins'), 10) || 0) + 1;
+    localStorage.setItem('dominoLadderWins', String(wins));
+    if (wins === PROMO_WINS_NEEDED && !localStorage.getItem('dominoLadderTrubaPromoShown')) {
+      localStorage.setItem('dominoLadderTrubaPromoShown', '1');
+      setTimeout(() => document.getElementById('promo-overlay').classList.add('show'), 1200);
+    }
+  }
+
+  document.getElementById('promo-play').addEventListener('click', () => {
+    window.open(PROMO_URL, '_blank', 'noopener');
+    document.getElementById('promo-overlay').classList.remove('show');
+  });
+  document.getElementById('promo-later').addEventListener('click', () => {
+    document.getElementById('promo-overlay').classList.remove('show');
+  });
 
   // Запуск
   init();
