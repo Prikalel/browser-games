@@ -23,6 +23,14 @@ In a series of attempts of password guess, you make an assumption based on the c
 
 В серии попыток вы делаете предположение по содержании пароля, вводить можно только цифры 1-9, без 0. Загаданный пароль всегда содержит только уникальные цифры (без повторений). Но в ваших попытках этого ограничения нет. Если вы не успели за 30 секунд вам покажут какой пароль был загадан. После попытки подсвечиваются цифры - зелёным если вы угадали и цифру и позицию, жёлтым - если ваша цифра есть в пароле, но в попытке она стоит не на своём месте. После новой попытки старая пропадает так что вам надо помнить, какие попытки вы делали.Если в вашей попытке есть хоть 1 зелёная цифра, то в следующей попытке я вам советую пытаться угадать пароль ставя на ту же позицию ту же цифру, иначе в новой попытке позиция станет красной а из времени отнимется 5 секунд.
 
+### Mutagen
+
+A turn-based hardcore puzzle game where you need to plan the optimal route for devouring cells based on a short forecast. A victory is counted only when the most effective route is played. Simple controls - space bar to consume cells and get points, arrow keys on the keyboard to move. The game can be both complex and simple - it depends on how lucky you are with the number of mutations of the playing field. The more cells move, the harder it is to win.
+
+![MUTANEN](imgs/mutagen.png)
+
+Пошаговая хардорная головоломка, где на основе короткого прогноза надо спланировать оптимальный маршрут пожирания клеток. Победа засчитывается только при воспроизведении наиболее эффективного маршрута. Простое управление - пробел для потребления клетки и получения очков, стрелки на клавиатуре для перемещения. Игра может быть как сложной так и простой - зависит от того как повезёт с кол-вом мутаций игрового поля. Чем больше перемещений клеток тем сложнее победить. Значок кружка означает что мутации не будет.
+
 ### [ShittyMaze](https://github.com/Prikalel/ShittyMaze)
 
 Just run through the level and shoot the enemies with an endless revolver. Find the green cube to advance to the next level. The difficulty increases with each level.
@@ -73,9 +81,9 @@ A quirky action game where Baba Yaga returns to her cozy hut — but something i
 
 ### [Rooster fight](https://github.com/Prikalel/RoosterFight2)
 
-Bet game where you select what roosters go to competition and can make bets.
+This is shit. Do not play. Bet game where you select what roosters go to competition and can make bets.
 
 ![Rooster fight](imgs/img-9.png)
 
 Игра в которой вы можете выбирать каких петухов отправить на турнир а также делать ставки какой петух победит. Победа определяется броском кубиков а кубики и их кол-во зависят от петуха. Петухов можно покупать
-и продавать, у каждого есть уровень.
+и продавать, у каждого есть уровень. Самая недоработанная из всех.

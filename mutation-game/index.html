@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Мутаген — игра на память мутаций</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔢</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="wrap">
+    <h1 class="title">МУТАГЕН</h1>
+
+    <div class="stats">
+      <span id="score" class="stat">очки: 0/0</span>
+      <span id="steps" class="stat">шаги: 0/0</span>
+      <span id="attempt" class="stat">попытка №1</span>
+    </div>
+
+    <div id="board" class="board" aria-label="Игровое поле 5 на 5"></div>
+
+    <div class="upcoming-wrap">
+      <div class="upcoming-label">ближайшие мутации</div>
+      <div id="upcoming" class="upcoming"></div>
+    </div>
+
+    <div class="legend">
+      <span><i>🔢</i>+4 клетки</span>
+      <span><i>▶ ◀ 🔼 🔽</i>сдвиг поля</span>
+      <span><i>➕</i>+1 всем</span>
+      <span><i>➖</i>−1 (кроме 1)</span>
+      <span><i>↩</i>поворот ↻</span>
+      <span><i>↪</i>поворот ↺</span>
+      <span><i>⚫</i>пропуск</span>
+    </div>
+    <div class="hint">управление: стрелки — движение · пробел — потребить клетку (пустая клетка тоже ход)</div>
+
+    <div id="overlay" class="overlay hidden">
+      <div class="panel">
+        <h2 id="ovTitle"></h2>
+        <p id="ovText"></p>
+        <button id="ovBtn" class="hidden">НОВАЯ ИГРА</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/constants.js"></script>
+  <script src="js/mutations.js"></script>
+  <script src="js/sequence.js"></script>
+  <script src="js/solver.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

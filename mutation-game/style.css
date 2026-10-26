@@ -1,0 +1,233 @@
+/* ============================================================================
+   «МУТАГЕН» — оформление. Игра рассчитана на ПК (управление с клавиатуры).
+   ============================================================================ */
+
+:root {
+  --cell: 62px;   /* размер клетки */
+  --gap: 8px;     /* зазор сетки */
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(1200px 800px at 50% -10%, #1b2440, #0b0e1a 60%);
+  color: #dfe6f3;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  user-select: none;
+}
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 24px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: .35em;
+  color: #7fd1ff;
+  text-shadow: 0 0 18px rgba(127, 209, 255, .35);
+}
+
+.stats {
+  display: flex;
+  gap: 18px;
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 15px;
+  color: #9fb2d9;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- игровое поле ---------- */
+
+.board {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, var(--cell));
+  grid-template-rows: repeat(5, var(--cell));
+  gap: var(--gap);
+  padding: var(--gap);
+  background: #131a2e;
+  border: 1px solid #26325a;
+  border-radius: 14px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, .5);
+}
+
+.cell {
+  background: #0d1326;
+  border: 1px solid #20294d;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 700;
+  font-family: Consolas, 'Courier New', monospace;
+}
+
+/* курсор игрока — выделенная клетка */
+.cell.cursor {
+  border-color: #69e2ff;
+  background: #101c38;
+  box-shadow: 0 0 0 2px #69e2ff inset, 0 0 16px rgba(105, 226, 255, .45);
+}
+
+/* значения клеток: чем больше — тем «горячее» */
+.v1 { color: #8ab4ff; }
+.v2 { color: #7fd1ff; }
+.v3 { color: #7dffb0; }
+.v4 { color: #ffe27d; }
+.v5 { color: #ffb86b; }
+.v6 { color: #ff9d6b; }
+.v7 { color: #ff7d7d; }
+.v8 { color: #ff7bd5; }
+.v9 { color: #d78bff; }
+
+/* новые клетки вспыхивают */
+.pop { animation: pop .28s ease-out; }
+@keyframes pop {
+  from { transform: scale(.2); opacity: 0; }
+}
+
+/* вспышка поля при эффектной мутации */
+.board.flash { animation: flash .3s ease-out; }
+@keyframes flash {
+  from { box-shadow: 0 0 0 3px rgba(255, 255, 255, .75), 0 10px 40px rgba(0, 0, 0, .5); }
+  to   { box-shadow: 0 10px 40px rgba(0, 0, 0, .5); }
+}
+
+/* всплывающие «+N» над потреблённой клеткой */
+.gain {
+  position: absolute;
+  width: var(--cell);
+  height: var(--cell);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 800;
+  color: #7dffb0;
+  text-shadow: 0 0 8px rgba(0, 0, 0, .8);
+  pointer-events: none;
+  animation: floatUp .7s ease-out forwards;
+}
+@keyframes floatUp {
+  from { transform: translateY(0);    opacity: 1; }
+  to   { transform: translateY(-26px); opacity: 0; }
+}
+
+/* ---------- ближайшие мутации ---------- */
+
+.upcoming-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.upcoming-label {
+  font-size: 12px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: #5f6f99;
+}
+
+.upcoming {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #131a2e;
+  border: 1px solid #26325a;
+  border-radius: 12px;
+  padding: 8px 16px;
+}
+
+.slot {
+  font-size: 24px;
+  opacity: .65;
+  filter: grayscale(.25);
+}
+
+.slot.now {
+  font-size: 30px;
+  opacity: 1;
+  filter: none;
+  text-shadow: 0 0 12px rgba(255, 255, 255, .35);
+}
+
+/* ---------- легенда и подсказка ---------- */
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  max-width: 560px;
+  justify-content: center;
+  font-size: 13px;
+  color: #8fa0c7;
+}
+
+.legend i {
+  font-style: normal;
+  margin-right: 6px;
+  font-size: 15px;
+}
+
+.hint { font-size: 12px; color: #5f6f99; }
+
+/* ---------- оверлей победы/поражения ---------- */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 8, 18, .72);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.panel {
+  background: #141c33;
+  border: 1px solid #2c3a68;
+  border-radius: 16px;
+  padding: 28px 40px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .6);
+  max-width: 440px;
+}
+
+.panel h2 { font-size: 30px; letter-spacing: .15em; }
+.panel h2.win  { color: #7dffb0; }
+.panel h2.lose { color: #ff7d7d; }
+
+.panel p { color: #9fb2d9; font-size: 14px; line-height: 1.55; }
+
+#ovBtn {
+  margin-top: 6px;
+  padding: 12px 26px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  color: #061018;
+  background: linear-gradient(135deg, #69e2ff, #7dffb0);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+#ovBtn:hover { filter: brightness(1.12); }
+
+.hidden { display: none !important; }
