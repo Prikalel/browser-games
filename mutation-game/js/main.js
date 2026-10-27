@@ -14,6 +14,12 @@ let inputLocked = false;
 let lastGrid = null;
 let loseTimer = null;
 
+/* ---------- mobile touch support ---------- */
+let touchStartX = 0, touchStartY = 0, touchStartTime = 0;
+let lastTapTime = 0;
+const SWIPE_THRESHOLD = 30;   // пикселей для свайпа
+const DOUBLE_TAP_MS   = 300;  // окно для двойного тапа
+
 let boardEl, scoreEl, stepsEl, attemptEl, upcomingEl, overlayEl, ovTitleEl, ovTextEl, ovBtnEl;
 
 /** Начать попытку: поле из стартового состояния, игрок в центре, первая 🔢 применена. */
@@ -109,25 +115,23 @@ function lose() {
     hideOverlay();
     inputLocked = false;
     startRun();                                      // та же последовательность, с начала
-  }, 2400);
+  }, 1500);
 }
 
-function onKey(e) {
-  const codes = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'];
-  if (!codes.includes(e.code)) return;
-  e.preventDefault();
+/** Обработка действия игрока (общая для клавиатуры и тача). */
+function playerAction(action) {
   if (!R || R.finished || inputLocked) return;
 
   let acted = true;
   let gained = 0;
 
-  if (e.code === 'Space') {                          // потребление клетки (пустая — тоже ход, +0)
+  if (action === 'consume') {                        // потребление клетки
     const v = R.grid[R.pos];
     if (v > 0) { R.grid[R.pos] = 0; R.score += v; gained = v; }
-  } else if (e.code === 'ArrowUp'    && R.pos >= SIZE)           R.pos -= SIZE;
-  else if (e.code === 'ArrowDown'  && R.pos < CELL_COUNT - SIZE) R.pos += SIZE;
-  else if (e.code === 'ArrowLeft'  && R.pos % SIZE > 0)          R.pos -= 1;
-  else if (e.code === 'ArrowRight' && R.pos % SIZE < SIZE - 1)   R.pos += 1;
+  } else if (action === 'up'    && R.pos >= SIZE)           R.pos -= SIZE;
+  else if (action === 'down'  && R.pos < CELL_COUNT - SIZE) R.pos += SIZE;
+  else if (action === 'left'  && R.pos % SIZE > 0)          R.pos -= 1;
+  else if (action === 'right' && R.pos % SIZE < SIZE - 1)   R.pos += 1;
   else acted = false;
 
   if (!acted) return;                                // движение в стену — не ход
@@ -139,8 +143,52 @@ function onKey(e) {
 
   render(mut, gained);
 
-  if (R.score >= G.goal) { win(); return; }          // цель набрана (быстрее лимита нельзя, но проверим)
-  if (R.steps >= G.limit) lose();                    // ходы кончились, очков не хватило
+  if (R.score >= G.goal) { win(); return; }          // цель набрана
+  if (R.steps >= G.limit) lose();                    // ходы кончились
+}
+
+function onKey(e) {
+  const codes = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'];
+  if (!codes.includes(e.code)) return;
+  e.preventDefault();
+
+  const map = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right', Space: 'consume' };
+  playerAction(map[e.code]);
+}
+
+/* ---------- touch handlers (swipe + double-tap) ---------- */
+function onTouchStart(e) {
+  const t = e.touches[0];
+  touchStartX = t.clientX;
+  touchStartY = t.clientY;
+  touchStartTime = Date.now();
+}
+
+function onTouchEnd(e) {
+  if (!R || R.finished || inputLocked) return;
+  const t = e.changedTouches[0];
+  const dx = t.clientX - touchStartX;
+  const dy = t.clientY - touchStartY;
+  const elapsed = Date.now() - touchStartTime;
+
+  // Проверка двойного тапа (потребление клетки)
+  const now = Date.now();
+  if (elapsed < DOUBLE_TAP_MS && Math.abs(dx) < SWIPE_THRESHOLD && Math.abs(dy) < SWIPE_THRESHOLD) {
+    if (now - lastTapTime < DOUBLE_TAP_MS) {
+      playerAction('consume');
+      lastTapTime = 0;
+      return;
+    }
+    lastTapTime = now;
+  }
+
+  // Свайп (перемещение)
+  if (Math.abs(dx) < SWIPE_THRESHOLD && Math.abs(dy) < SWIPE_THRESHOLD) return; // слишком коротко
+  if (Math.abs(dx) > Math.abs(dy)) {
+    playerAction(dx > 0 ? 'right' : 'left');
+  } else {
+    playerAction(dy > 0 ? 'down' : 'up');
+  }
 }
 
 function initUI() {
@@ -161,6 +209,10 @@ function initUI() {
     inputLocked = false;
     newGame();
   });
+
+  // Touch controls (mobile)
+  boardEl.addEventListener('touchstart', onTouchStart, { passive: true });
+  boardEl.addEventListener('touchend', onTouchEnd, { passive: true });
 
   newGame();
 }

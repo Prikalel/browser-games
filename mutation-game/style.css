@@ -182,7 +182,67 @@ body {
   font-size: 15px;
 }
 
-.hint { font-size: 12px; color: #5f6f99; }
+.hint { font-size: 12px; color: #5f6f99; text-align: center; }
+
+/* ---------- mobile (телефон) ---------- */
+
+@media (max-width: 600px) {
+  body {
+    background: radial-gradient(800px 500px at 50% -10%, #1b2440, #0b0e1a 60%);
+  }
+
+  .wrap {
+    padding: 8px;
+    gap: 6px;
+  }
+
+  .title {
+    font-size: 20px;
+    letter-spacing: .25em;
+  }
+
+  .stats {
+    font-size: 12px;
+    gap: 10px;
+  }
+
+  :root {
+    --cell: calc((100vw - 48px) / 6);  /* клетка подстраивается под ширину экрана */
+    --gap: 5px;
+  }
+
+  .cell { font-size: 20px; }
+
+  .upcoming { padding: 5px 10px; gap: 8px; }
+  .slot     { font-size: 18px; }
+  .slot.now { font-size: 22px; }
+
+  .legend {
+    font-size: 11px;
+    gap: 4px 10px;
+    max-width: 100%;
+  }
+
+  .legend i { font-size: 13px; }
+
+  .hint { font-size: 11px; }
+
+  .panel { padding: 18px 22px; max-width: 92vw; }
+  .panel h2 { font-size: 24px; }
+  .panel p  { font-size: 13px; }
+  #ovBtn   { font-size: 14px; padding: 10px 20px; }
+
+  /* на мобильном — всё на одном экране, без скролла */
+  html, body {
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  .wrap {
+    max-height: 100vh;
+    overflow: hidden;
+  }
+}
 
 /* ---------- оверлей победы/поражения ---------- */
 
