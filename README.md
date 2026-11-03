@@ -81,9 +81,8 @@ A quirky action game where Baba Yaga returns to her cozy hut — but something i
 
 ### [Rooster fight](https://github.com/Prikalel/RoosterFight2)
 
-This is shit. Do not play. Bet game where you select what roosters go to competition and can make bets.
+In this turn-based game, you need to place a piece on a 4x4 field each turn. The rooster will stand up to you. And as soon as the figure is positioned, it will give you points according to the values on the cells that it covers. The rooster has its own field, but it gets points according to where you place the piece. Before you click on the field, look at the bottom where it says how many points you and the rooster will get. You have 10 moves. If you get more points by the end of the game, you win!
 
 ![Rooster fight](imgs/img-9.png)
 
-Игра в которой вы можете выбирать каких петухов отправить на турнир а также делать ставки какой петух победит. Победа определяется броском кубиков а кубики и их кол-во зависят от петуха. Петухов можно покупать
-и продавать, у каждого есть уровень. Самая недоработанная из всех.
+В этой пошаговой игре вам надо каждый ход располагать какую-то фигуру на 4на4 поле. Петух будет вам противостоять. И фигура как только будет расположена даст вам очки в соответствии с значениями на клетках которые она покрывает. У петуха - своё поле, но очки он получает в соответствии с тем где вы располагаете фигуру. Прежде чем кликнуть на поле посмотрите внизу, где будет написано сколько очков получите вы и петух. У вас 10 ходов. Если к концу игры у вас получится больше очков - вы победили!
