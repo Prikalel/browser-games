@@ -102,9 +102,9 @@
             height: 46px;
             padding: 0;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.25);
-            color: #fff;
-            border: 2px solid rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.8);
+            color: #000;
+            border: 2px solid rgba(0, 0, 0, 0.85);
             font-size: 22px;
             font-weight: bold;
             font-style: italic;
@@ -118,7 +118,7 @@
             transition: all 0.3s ease;
         }
         .info-button:hover {
-            background: rgba(255, 255, 255, 0.45);
+            background: #ffffff;
             transform: scale(1.1);
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
         }
@@ -236,6 +236,19 @@
                 font-size: 17px;
             }
         }
+
+        /* ============================================================
+           VUPLEX MODE (страница открыта внутри Vuplex 3D WebView)
+           - Игры с isVuplexSupported: false скрываются.
+           - Промо-блоки (Steam, itch.io, контакты разработчика)
+             тоже скрываются.
+           ============================================================ */
+        body.vuplex-mode .buttons button[data-vuplex="false"] {
+            display: none;
+        }
+        body.vuplex-mode .promo-block {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -260,13 +273,13 @@
 
         <br/><br/>
         <div class="container">
-            <div class="box-1 steam-widget">
+            <div class="box-1 steam-widget promo-block">
                 <iframe src="https://store.steampowered.com/widget/4799230/?t=please%20add%20my%20game%20to%20your%20wishlist%20%F0%9F%98%8D%E2%AD%90%20thank%20you!" frameborder="0" loading="lazy"></iframe>
             </div>
-            <div>
+            <div class="promo-block">
                 <iframe frameborder="0" src="https://itch.io/embed/4940583?bg_color=000000&amp;fg_color=ffa5a5&amp;border_color=ca0000" width="552" height="167"><a href="https://velikiy-prikalel.itch.io/fetidity">FETIDITY by Velikiy Prikalel</a></iframe>
             </div>
-            <div class="box-2"><a style="color: #333;">contact with developer:</a> <a href="mailto:jispar@mail.ru">jispar@mail.ru</a>.</div>
+            <div class="box-2 promo-block"><a style="color: #333;">contact with developer:</a> <a href="mailto:jispar@mail.ru">jispar@mail.ru</a>.</div>
         </div>
     </div>
 
@@ -289,7 +302,10 @@
              glow   — цвет свечения при наведении (необязательно).
              mobile — true  → показывать на телефоне;
                       false → скрыть на телефоне (по умолчанию).
-           ============================================================ */
+             isVuplexSupported — поддержка запуска внутри Vuplex 3D WebView;
+                      true  → (по умолчанию) игра доступна в режиме Vuplex;
+                      false → кнопка скрывается, когда страница открыта в Vuplex.
+            ============================================================ */
         const GAMES = [
             {
                 cls: 'btn-domino',
@@ -299,6 +315,7 @@
                 hover: '#e07cee',
                 glow: 'rgba(240, 147, 251, 0.5)',
                 mobile: false,
+                isVuplexSupported: true,
             },
             {
                 cls: 'btn-password',
@@ -308,6 +325,7 @@
                 hover: '#3a8fd6',
                 glow: 'rgba(79, 172, 254, 0.5)',
                 mobile: false,
+                isVuplexSupported: true,
             },
             {
                 cls: 'btn-mutagen',
@@ -317,6 +335,7 @@
                 hover: '#001675',
                 glow: 'rgba(135, 157, 255, 0.5)',
                 mobile: true,
+                isVuplexSupported: true,
             },
             {
                 cls: 'btn-shittymaze',
@@ -326,6 +345,7 @@
                 hover: '#915700',
                 glow: 'rgba(0, 0, 0, 0.5)',
                 mobile: false,
+                isVuplexSupported: false,
             },
             {
                 cls: 'btn-theygrow',
@@ -335,6 +355,7 @@
                 hover: '#2d0081',
                 glow: 'rgba(0, 0, 0, 0.5)',
                 mobile: false,
+                isVuplexSupported: true,
             },
             {
                 cls: 'degustator',
@@ -344,6 +365,7 @@
                 hover: '#1a3f00',
                 glow: 'rgba(179, 255, 47, 0.5)',
                 mobile: true,
+                isVuplexSupported: true,
             },
             {
                 cls: 'aang',
@@ -353,6 +375,7 @@
                 hover: '#570600',
                 glow: 'rgba(255, 143, 135, 0.5)',
                 mobile: true,
+                isVuplexSupported: true,
             },
             {
                 cls: 'truba',
@@ -362,6 +385,7 @@
                 hover: '#000000',
                 glow: 'rgba(61, 10, 10, 0.5)',
                 mobile: false,
+                isVuplexSupported: false,
             },
             {
                 cls: 'baba-yaga',
@@ -371,6 +395,7 @@
                 hover: '#4c8200',
                 glow: 'rgba(249, 255, 82, 0.5)',
                 mobile: false,
+                isVuplexSupported: true,
             },
             {
                 cls: 'rooster-fiht',
@@ -380,6 +405,7 @@
                 hover: '#baac2f',
                 glow: 'rgba(68, 69, 47, 0.5)',
                 mobile: false,
+                isVuplexSupported: true,
             },
         ];
 
@@ -401,6 +427,9 @@
                 // Phone-visibility flag drives the @media rule in <style>.
                 btn.dataset.mobile = g.mobile ? 'true' : 'false';
 
+                // Vuplex-support flag: hidden in Vuplex mode via body.vuplex-mode CSS.
+                btn.dataset.vuplex = (g.isVuplexSupported === false) ? 'false' : 'true';
+
                 btn.textContent = g.label;
                 btn.addEventListener('click', function () {
                     window.location.href = g.href;
@@ -411,6 +440,24 @@
         }
 
         renderGames();
+
+        /* ---------- Определение Vuplex 3D WebView ----------
+           window.vuplex добавляется Vuplex в страницу; в обычном браузере
+           его нет (undefined). Проверяем именно наличие объекта, а не
+           window.vuplex === null. Объект может появиться позже старта
+           загрузки страницы, поэтому дополнительно слушаем vuplexready. */
+        function inVuplex() {
+            return typeof window.vuplex !== 'undefined' && window.vuplex !== null;
+        }
+
+        function applyVuplexMode() {
+            if (inVuplex()) {
+                document.body.classList.add('vuplex-mode');
+            }
+        }
+
+        applyVuplexMode();
+        window.addEventListener('vuplexready', applyVuplexMode, { once: true });
 
         /* ---------- README modal logic (unchanged) ---------- */
         let readmeLoaded = false;
