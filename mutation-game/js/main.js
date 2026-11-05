@@ -97,8 +97,17 @@ function hideOverlay() {
   overlayEl.classList.add('hidden');
 }
 
+/** Vuplex (Unity webview): сообщить о победе. Вне vuplex ничего не делает. */
+function postVuplexWin(gameName, score) {
+  try {
+    if (typeof window.vuplex === 'undefined' || window.vuplex === null) return;
+    window.vuplex.postMessage(JSON.stringify({ type: "newWinOccured", payload: { game_name: gameName, new_score: score } }));
+  } catch (e) { /* vuplex bridge unavailable — ignore */ }
+}
+
 function win() {
   R.finished = true;
+  postVuplexWin('mutagen', R.score);                  // vuplex: очки, набранные к моменту победы
   showOverlay('ПОБЕДА!',
     `${R.score}/${G.goal} очков за ${R.steps}/${G.limit} шагов — оптимальный маршрут найден.`,
     'win', true);

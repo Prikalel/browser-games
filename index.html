@@ -169,6 +169,29 @@
             box-shadow: none;
         }
 
+        /* Language toggle (RU/EN) — hidden by default, visible only in
+           Vuplex mode via the body.vuplex-mode rule below. */
+        .modal-lang {
+            display: none;
+            position: absolute;
+            top: 8px;
+            left: 12px;
+            width: auto;
+            padding: 4px 10px;
+            background: transparent;
+            border: none;
+            font-size: 24px;
+            line-height: 1;
+            cursor: pointer;
+        }
+        .modal-lang:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        body.vuplex-mode .modal-lang {
+            display: inline-block;
+        }
+
         /* ---------- Rendered README styling ---------- */
         .readme {
             text-align: left;
@@ -258,6 +281,7 @@
     <!-- README modal -->
     <div class="modal" id="readmeModal" onclick="if(event.target===this) closeReadme()">
         <div class="modal-content">
+            <button class="modal-lang" id="readmeLangToggle" onclick="toggleReadmeLang()" title="Сменить язык / Switch language">🔣</button>
             <button class="modal-close" onclick="closeReadme()" title="Закрыть">&times;</button>
             <div class="readme" id="readmeContent">
                 <p>Загрузка…</p>
@@ -459,18 +483,41 @@
         applyVuplexMode();
         window.addEventListener('vuplexready', applyVuplexMode, { once: true });
 
-        /* ---------- README modal logic (unchanged) ---------- */
-        let readmeLoaded = false;
+        /* ---------- README modal logic ----------
+           Non-vuplex: load README.md, no language toggle (button stays hidden).
+           Vuplex: load vuplex_RU.md by default; the 🔣 button switches
+           between vuplex_RU.md and vuplex_EN.md.
+           The file is chosen lazily at click time, because Vuplex may become
+           known only after the 'vuplexready' event. Button visibility is
+           purely CSS-driven (body.vuplex-mode), so applyVuplexMode() keeps
+           it correct automatically. */
+        const VUPLEX_READMES = { ru: './vuplex_RU.md', en: './vuplex_EN.md' };
+        let currentReadmeLang = 'ru';          // 'ru' | 'en' — vuplex mode only
+        const readmeCache = {};                // filename -> rendered HTML
 
-        async function openReadme() {
+        function openReadme() {
+            // Decide which file to show at click time (vuplex may appear late).
+            const file = inVuplex() ? VUPLEX_READMES[currentReadmeLang] : './README.md';
+            return loadReadme(file);
+        }
+
+        function toggleReadmeLang() {
+            currentReadmeLang = (currentReadmeLang === 'ru') ? 'en' : 'ru';
+            loadReadme(VUPLEX_READMES[currentReadmeLang]);
+        }
+
+        async function loadReadme(file) {
             const modal = document.getElementById('readmeModal');
             const content = document.getElementById('readmeContent');
             modal.classList.add('open');
 
-            if (readmeLoaded) return;
+            if (readmeCache[file]) {
+                content.innerHTML = readmeCache[file];
+                return;
+            }
 
             try {
-                const res = await fetch('./README.md', { cache: 'no-store' });
+                const res = await fetch(file, { cache: 'no-store' });
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 const text = await res.text();
 
@@ -482,10 +529,10 @@
                     html = '<pre style="white-space:pre-wrap;">' + text + '</pre>';
                 }
                 content.innerHTML = html;
-                readmeLoaded = true;
+                readmeCache[file] = html;      // per-file cache, successful loads only
             } catch (e) {
                 content.innerHTML =
-                    '<p>Не удалось загрузить README.md.</p>' +
+                    '<p>Не удалось загрузить ' + file + '.</p>' +
                     '<p>Если вы открыли страницу локально через <code>file://</code>, ' +
                     'браузер блокирует загрузку файла. На GitHub Pages всё работает корректно.</p>' +
                     '<p style="color:#999;">Ошибка: ' + e.message + '</p>';

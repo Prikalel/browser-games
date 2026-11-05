@@ -386,7 +386,13 @@
   const PROMO_URL = 'https://prikalel.gitlab.io/truba-build/';
   const PROMO_WINS_NEEDED = 3;
 
+  // Vuplex mode: no cross-promo
+  function inVuplex() {
+    return typeof window.vuplex !== 'undefined' && window.vuplex !== null;
+  }
+
   function trackWinAndMaybePromo() {
+    if (inVuplex()) return; // Vuplex mode: no cross-promo
     let wins = (parseInt(localStorage.getItem('dominoLadderWins'), 10) || 0) + 1;
     localStorage.setItem('dominoLadderWins', String(wins));
     if (wins === PROMO_WINS_NEEDED && !localStorage.getItem('dominoLadderTrubaPromoShown')) {
