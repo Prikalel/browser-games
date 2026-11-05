@@ -272,6 +272,96 @@
         body.vuplex-mode .promo-block {
             display: none !important;
         }
+
+        /* ============================================================
+           ЛИДЕРБОРД (активен ТОЛЬКО в режиме Vuplex)
+           - .leaderboard-entry — кнопка-вход в нижнем блоке: в обычном
+             режиме полностью скрыта (display:none), в vuplex-режиме
+             показывается вместо скрытых промо-блоков и открывает оверлей;
+           - #leaderboardModal — модальное окно с таблицами победителей,
+             переиспользует стили .modal / .modal-content от README.
+           ============================================================ */
+        .leaderboard-entry {
+            display: none;
+        }
+        body.vuplex-mode .leaderboard-entry {
+            display: block;
+            margin-top: 6px;
+            padding: 14px 12px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            border-radius: 12px;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: all 0.3s ease;
+        }
+        @media (hover: hover) {
+            body.vuplex-mode .leaderboard-entry:hover {
+                background: #f5f5fa;
+                transform: scale(1.03);
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            }
+        }
+
+        .leaderboard-content {
+            max-width: 560px;
+        }
+        .leaderboard-title {
+            margin: 0 0 4px;
+            font-size: clamp(1.2em, 4vw, 1.5em);
+            color: #333;
+            word-break: break-word;
+        }
+        .leaderboard-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin: 14px 0 18px;
+        }
+        .leaderboard-tabs button {
+            padding: 8px 16px;
+            font-size: 15px;
+            border: none;
+            border-radius: 8px;
+            background: #ececf4;
+            color: #555;
+            cursor: pointer;
+        }
+        .leaderboard-tabs button:hover {
+            background: #dcdcf0;
+            transform: none;
+            box-shadow: none;
+        }
+        .leaderboard-tabs button.lb-active {
+            background: #667eea;
+            color: #fff;
+        }
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .leaderboard-table th,
+        .leaderboard-table td {
+            padding: 8px 12px;
+            font-size: 16px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        .leaderboard-table th {
+            background: #f5f5fa;
+            color: #333;
+        }
+        .leaderboard-table tr:last-child td {
+            border-bottom: none;
+        }
+        .leaderboard-table .lb-empty td {
+            color: #999;
+            font-style: italic;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -289,6 +379,16 @@
         </div>
     </div>
 
+    <!-- Leaderboard modal (только для Vuplex-режима; паттерн README-модалки) -->
+    <div class="modal" id="leaderboardModal" onclick="if(event.target===this) closeLeaderboard()">
+        <div class="modal-content leaderboard-content">
+            <button class="modal-close" onclick="closeLeaderboard()" title="Закрыть">&times;</button>
+            <h2 class="leaderboard-title">🏆Лидерборд/leaderboard🏆</h2>
+            <div class="leaderboard-tabs" id="leaderboardTabs"></div>
+            <div class="leaderboard-tables" id="leaderboardTables"></div>
+        </div>
+    </div>
+
     <div class="container">
         <h1>Select a game/Выберите игру</h1>
 
@@ -296,7 +396,7 @@
         <div class="buttons" id="gameButtons"></div>
 
         <br/><br/>
-        <div class="container">
+        <div class="container" id="bottomSection">
             <div class="box-1 steam-widget promo-block">
                 <iframe src="https://store.steampowered.com/widget/4799230/?t=please%20add%20my%20game%20to%20your%20wishlist%20%F0%9F%98%8D%E2%AD%90%20thank%20you!" frameborder="0" loading="lazy"></iframe>
             </div>
@@ -304,6 +404,11 @@
                 <iframe frameborder="0" src="https://itch.io/embed/4940583?bg_color=000000&amp;fg_color=ffa5a5&amp;border_color=ca0000" width="552" height="167"><a href="https://velikiy-prikalel.itch.io/fetidity">FETIDITY by Velikiy Prikalel</a></iframe>
             </div>
             <div class="box-2 promo-block"><a style="color: #333;">contact with developer:</a> <a href="mailto:jispar@mail.ru">jispar@mail.ru</a>.</div>
+
+            <!-- Вход в лидерборд: виден и кликабелен только в vuplex-режиме
+                 (правило body.vuplex-mode .leaderboard-entry в CSS выше);
+                 в обычном режиме элемент полностью скрыт. -->
+            <div class="leaderboard-entry" id="leaderboardEntry" onclick="openLeaderboard()" title="Открыть лидерборд / Open leaderboard">🏆Лидерборд/leaderboard🏆</div>
         </div>
     </div>
 
@@ -480,8 +585,235 @@
             }
         }
 
+        /* ============================================================
+           ДЕБАГ-ИМИТАЦИЯ VUPLEX (только для отладки в обычном браузере)
+           ------------------------------------------------------------
+           Дебаг: reloadAsVuplex() в консоли — перезагрузить страницу в
+           режиме-имитации vuplex; повторный вызов вернёт обычный режим
+           (переключатель). Мок ставится ДО вызова applyVuplexMode() ниже,
+           чтобы inVuplex() его увидел и включился vuplex-режим. Дополнительно
+           доступен window.mockVuplexLeaderboards({...} или 'json-строка') —
+           «прислать» лидерборды из Unity, не выходя из браузера.
+           В реальном Vuplex и при обычном просмотре (флаг не установлен)
+           этот блок не делает НИЧЕГО.
+           ============================================================ */
+        (function installVuplexDebugMock() {
+            const FLAG = 'vuplexDebug';
+            function debugFlagSet() {
+                try { return localStorage.getItem(FLAG) === '1'; } catch (e) { return false; }
+            }
+
+            // Переключатель: 1-й вызов включает имитацию, 2-й — выключает.
+            window.reloadAsVuplex = function () {
+                try {
+                    if (localStorage.getItem(FLAG) === '1') localStorage.removeItem(FLAG);
+                    else localStorage.setItem(FLAG, '1');
+                } catch (e) {
+                    console.warn('[vuplex-mock] localStorage недоступен:', e);
+                    return;
+                }
+                location.reload();
+            };
+
+            // Реальный Vuplex уже есть или флаг не установлен — мок не нужен.
+            if (window.vuplex || !debugFlagSet()) return;
+
+            const handlers = {};   // type -> [callbacks]
+            window.vuplex = {
+                postMessage: function (msg) {
+                    console.log('[vuplex-mock] postMessage:', msg);
+                },
+                addEventListener: function (type, cb) {
+                    if (typeof cb !== 'function') return;
+                    (handlers[type] = handlers[type] || []).push(cb);
+                },
+                removeEventListener: function (type, cb) {
+                    if (!handlers[type]) return;
+                    handlers[type] = handlers[type].filter(function (h) { return h !== cb; });
+                }
+            };
+
+            // Хелпер: вызывает сохранённые обработчики "message" так же,
+            // как это сделал бы настоящий Vuplex ({ data: '<json-строка>' }).
+            window.mockVuplexLeaderboards = function (dataOrJson) {
+                const listeners = handlers['message'] || [];
+                if (!listeners.length) {
+                    console.warn('[vuplex-mock] Нет подписчиков события "message".');
+                    return;
+                }
+                const payload = (typeof dataOrJson === 'string') ? dataOrJson : JSON.stringify(dataOrJson);
+                listeners.forEach(function (cb) { cb({ data: payload }); });
+            };
+
+            console.log('[vuplex-mock] Активен. reloadAsVuplex() — обычный режим; ' +
+                'mockVuplexLeaderboards(...) — тест лидербордов.');
+        })();
+
         applyVuplexMode();
         window.addEventListener('vuplexready', applyVuplexMode, { once: true });
+
+        /* ============================================================
+           ЛИДЕРБОРД (активен только в режиме Vuplex)
+           ------------------------------------------------------------
+           Данные приходят из Unity одним сообщением по шине vuplex:
+           { "leaderboards": { "password": { "count": 5, "users": [
+               { "high_score": 123, "user_name": "Вова пупкин" } ] }, ... } }
+           Ожидаемые ключи игр: password, mutagen, theygrow, aanglegend,
+           roosterfight (ключи чистим от пробелов, неизвестные игнорируем).
+           ============================================================ */
+        const LEADERBOARD_GAMES = ['password', 'mutagen', 'theygrow', 'aanglegend', 'roosterfight'];
+        const LEADERBOARD_DATA = {};            // game id -> массив { high_score, user_name }
+        let activeLeaderboardGame = 'password'; // активная вкладка (по умолчанию password)
+        let leaderboardBuilt = false;           // вкладки/таблицы строятся при первом открытии
+
+        function openLeaderboard() {
+            if (!inVuplex()) return;            // строго только vuplex-режим
+            ensureLeaderboardBuilt();
+            // Прячем список игр и нижний блок — closeLeaderboard() вернёт их на место.
+            document.getElementById('gameButtons').style.display = 'none';
+            document.getElementById('bottomSection').style.display = 'none';
+            document.getElementById('leaderboardModal').classList.add('open');
+        }
+
+        function closeLeaderboard() {
+            const modal = document.getElementById('leaderboardModal');
+            if (!modal.classList.contains('open')) return;   // не открыт — нечего восстанавливать
+            modal.classList.remove('open');
+            document.getElementById('gameButtons').style.display = '';
+            document.getElementById('bottomSection').style.display = '';
+        }
+
+        /* Разовая сборка вкладок и таблиц — при первом открытии оверлея. */
+        function ensureLeaderboardBuilt() {
+            if (leaderboardBuilt) return;
+            leaderboardBuilt = true;
+            const tabs = document.getElementById('leaderboardTabs');
+            const holder = document.getElementById('leaderboardTables');
+            LEADERBOARD_GAMES.forEach(function (id, i) {
+                const tab = document.createElement('button');
+                tab.type = 'button';
+                tab.className = 'lb-tab' + (i === 0 ? ' lb-active' : '');
+                tab.dataset.game = id;
+                tab.textContent = id;                     // password / mutagen / ...
+                tab.addEventListener('click', function () { activateLeaderboardTab(id); });
+                tabs.appendChild(tab);
+
+                const table = document.createElement('table');
+                table.className = 'leaderboard-table';
+                table.id = 'lb-table-' + id;
+                if (i !== 0) table.style.display = 'none'; // видна только активная
+                const head = document.createElement('thead');
+                head.innerHTML = '<tr><th>#</th><th>⭐</th><th>name</th></tr>';
+                table.appendChild(head);
+                table.appendChild(document.createElement('tbody'));
+                holder.appendChild(table);
+                renderLeaderboardRows(id);
+            });
+        }
+
+        function activateLeaderboardTab(id) {
+            activeLeaderboardGame = id;
+            const tabs = document.querySelectorAll('#leaderboardTabs .lb-tab');
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.toggle('lb-active', tabs[i].dataset.game === id);
+            }
+            LEADERBOARD_GAMES.forEach(function (game) {
+                const table = document.getElementById('lb-table-' + game);
+                if (table) table.style.display = (game === id) ? '' : 'none';
+            });
+        }
+
+        /* Заполнение таблицы игры id: пересортировка по убыванию очков,
+           при отсутствии данных — одна приглушённая строка-заглушка. */
+        function renderLeaderboardRows(id) {
+            const table = document.getElementById('lb-table-' + id);
+            if (!table) return;
+            const tbody = table.tBodies[0];
+            tbody.textContent = '';
+            // Вход может быть неотсортированным — сортируем сами (по убыванию).
+            const rows = (LEADERBOARD_DATA[id] || []).slice().sort(function (a, b) {
+                return (Number(b.high_score) || 0) - (Number(a.high_score) || 0);
+            });
+            if (!rows.length) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.className = 'lb-empty';
+                const emptyCell = document.createElement('td');
+                emptyCell.colSpan = 3;
+                emptyCell.textContent = '— нет данных / no data —';
+                emptyRow.appendChild(emptyCell);
+                tbody.appendChild(emptyRow);
+                return;
+            }
+            rows.forEach(function (user, index) {
+                const tr = document.createElement('tr');
+                const rank = document.createElement('td');
+                rank.textContent = String(index + 1);      // место после сортировки (с 1)
+                const score = document.createElement('td');
+                score.textContent = String(user.high_score);
+                const name = document.createElement('td');
+                name.textContent = user.user_name;         // textContent => без HTML-инъекций
+                tr.appendChild(rank);
+                tr.appendChild(score);
+                tr.appendChild(name);
+                tbody.appendChild(tr);
+            });
+        }
+
+        /* ---------- Приём данных из Unity (шина vuplex) ----------
+           Сообщение может быть JSON-строкой или уже распарсенным объектом;
+           поле называется event.data либо event.value (зависит от версии
+           Vuplex) — обрабатываем оба варианта. Некорректные сообщения
+           тихо игнорируются (console.debug). */
+        function onLeaderboardMessage(event) {
+            try {
+                const raw = (event && event.data !== undefined && event.data !== null)
+                    ? event.data
+                    : (event ? event.value : undefined);
+                const msg = (typeof raw === 'string') ? JSON.parse(raw) : raw;
+                if (!msg || typeof msg !== 'object' ||
+                    !msg.leaderboards || typeof msg.leaderboards !== 'object') {
+                    return;
+                }
+                Object.keys(msg.leaderboards).forEach(function (key) {
+                    const id = String(key).trim();                    // защита от ключей вида "mutagen "
+                    if (LEADERBOARD_GAMES.indexOf(id) === -1) return; // неизвестные игры игнорируем
+                    const entry = msg.leaderboards[key];
+                    const users = (entry && Array.isArray(entry.users)) ? entry.users : [];
+                    // count — информационное поле, опираемся на users.length.
+                    LEADERBOARD_DATA[id] = users
+                        .filter(function (u) { return u && typeof u === 'object'; })
+                        .map(function (u) {
+                            return {
+                                high_score: Number(u.high_score) || 0,
+                                user_name: (u.user_name === undefined || u.user_name === null)
+                                    ? ''
+                                    : String(u.user_name)
+                            };
+                        });
+                });
+                // Последнее сообщение побеждает: если таблицы уже построены —
+                // сразу перерисовываем их (закрытый оверлей заполнится при открытии).
+                if (leaderboardBuilt) {
+                    LEADERBOARD_GAMES.forEach(renderLeaderboardRows);
+                }
+            } catch (e) {
+                console.debug('[leaderboard] некорректное сообщение vuplex проигнорировано:', e);
+            }
+        }
+
+        /* Подписка на сообщения шины: если window.vuplex уже есть (в т.ч. мок
+           выше) — подписываемся сразу, иначе ждём vuplexready. Существующий
+           слушатель vuplexready выше по коду не затрагивается. */
+        function subscribeLeaderboardBus() {
+            if (window.vuplex && typeof window.vuplex.addEventListener === 'function') {
+                window.vuplex.addEventListener('message', onLeaderboardMessage);
+            }
+        }
+        if (inVuplex()) {
+            subscribeLeaderboardBus();
+        } else {
+            window.addEventListener('vuplexready', subscribeLeaderboardBus, { once: true });
+        }
 
         /* ---------- README modal logic ----------
            Non-vuplex: load README.md, no language toggle (button stays hidden).
@@ -544,7 +876,10 @@
         }
 
         document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') closeReadme();
+            if (e.key === 'Escape') {
+                closeReadme();
+                closeLeaderboard();   // не открыт — early return, безопасно в любом режиме
+            }
         });
     </script>
 </body>
